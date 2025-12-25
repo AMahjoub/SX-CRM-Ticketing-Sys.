@@ -19,8 +19,10 @@ const ClientDetail: React.FC<ClientDetailProps> = ({
   customer, 
   projects: allProjects, 
   tickets: allClientTickets,
+  staff,
   manifest,
   onUpdateTicketStatus,
+  onUpdateProject,
   onReplyToTicket,
   onBack 
 }) => {
@@ -31,6 +33,7 @@ const ClientDetail: React.FC<ClientDetailProps> = ({
   const [replyFiles, setReplyFiles] = useState<Attachment[]>([]);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const projectFileInputRef = useRef<HTMLInputElement>(null);
 
   const clientProjects = allProjects.filter(p => p.clientId === customer.id);
   const selectedTicket = allClientTickets.find(t => t.id === selectedTicketId);
@@ -40,7 +43,7 @@ const ClientDetail: React.FC<ClientDetailProps> = ({
     const files = e.target.files;
     if (!files) return;
 
-    const attachments: Attachment[] = Array.from(files).map((file: File) => ({
+    const attachments: Attachment[] = (Array.from(files) as File[]).map((file) => ({
       name: file.name,
       url: URL.createObjectURL(file),
       type: file.type,
@@ -49,6 +52,24 @@ const ClientDetail: React.FC<ClientDetailProps> = ({
     }));
 
     setReplyFiles(prev => [...prev, ...attachments]);
+  };
+
+  const handleProjectFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!selectedProject || !e.target.files) return;
+    
+    const newFiles: Attachment[] = (Array.from(e.target.files) as File[]).map(file => ({
+      name: file.name,
+      url: URL.createObjectURL(file),
+      type: file.type,
+      size: file.size,
+      uploadedAt: new Date().toISOString()
+    }));
+
+    onUpdateProject(selectedProject.id, { 
+      attachments: [...(selectedProject.attachments || []), ...newFiles] 
+    });
+    
+    if (projectFileInputRef.current) projectFileInputRef.current.value = '';
   };
 
   const removeFile = (index: number) => {
@@ -146,8 +167,8 @@ const ClientDetail: React.FC<ClientDetailProps> = ({
                   <p className="text-xs text-slate-400 font-normal line-clamp-2 mb-10 leading-relaxed break-words">{p.description}</p>
                   <div className="grid grid-cols-2 gap-6 border-t border-slate-50 pt-8">
                     <div>
-                      <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Base Revenue</p>
-                      <p className="text-sm font-bold text-slate-900">SAR {p.value.toLocaleString()}</p>
+                      <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Authorized Contract</p>
+                      <p className="text-sm font-bold text-slate-900">SAR {(p.value * 1.15).toLocaleString()}</p>
                     </div>
                     <div className="flex justify-end items-center">
                        <button className="px-6 py-2 bg-slate-900 text-white text-[10px] font-bold uppercase tracking-widest rounded-[10px] hover:brightness-125 transition-all">Audit Detail</button>
@@ -194,6 +215,19 @@ const ClientDetail: React.FC<ClientDetailProps> = ({
                            <button className="p-2 hover:bg-slate-200 rounded-full transition-colors text-slate-400 shrink-0 ml-2"><DownloadIcon /></button>
                         </div>
                       ))}
+                      <input 
+                        type="file" 
+                        multiple 
+                        className="hidden" 
+                        ref={projectFileInputRef} 
+                        onChange={handleProjectFileUpload} 
+                      />
+                      <button 
+                        onClick={() => projectFileInputRef.current?.click()} 
+                        className="col-span-2 py-4 border-2 border-dashed border-slate-200 rounded-[15px] text-[10px] font-bold text-slate-400 uppercase tracking-widest hover:border-slate-400 transition-all"
+                      >
+                        + Project Documents
+                      </button>
                    </div>
                 </div>
               </div>
@@ -201,11 +235,11 @@ const ClientDetail: React.FC<ClientDetailProps> = ({
                  <div className="bg-white p-10 rounded-[20px] border border-slate-200 shadow-sm space-y-6">
                     <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">Financial Probe</h4>
                     {(() => {
-                       const collected = selectedProject.payments.reduce((sum, p) => sum + p.amount, 0);
-                       const total = selectedProject.value * 1.15;
+                       const collected = selectedProject.payments.reduce((sum, p) => sum + Number(p.amount), 0);
+                       const total = (selectedProject.value as number) * 1.15;
                        return (
                          <div className="space-y-6">
-                            <div><p className="text-[9px] text-slate-400 uppercase font-bold">Authorized Contract</p><p className="text-xl font-bold text-slate-900 break-words">SAR {total.toLocaleString()}</p></div>
+                            <div><p className="text-[9px] text-slate-400 uppercase font-bold">Authorized Contract (Inc. VAT)</p><p className="text-xl font-bold text-slate-900 break-words">SAR {total.toLocaleString()}</p></div>
                             <div className="pt-6 border-t border-slate-50 space-y-4">
                                <div className="flex justify-between items-center"><p className="text-[9px] text-emerald-600 font-bold uppercase tracking-widest">Realized</p><p className="text-sm font-bold text-emerald-700">SAR {collected.toLocaleString()}</p></div>
                                <div className="flex justify-between items-center"><p className="text-[9px] text-rose-600 font-bold uppercase tracking-widest">Pending</p><p className="text-sm font-bold text-rose-700">SAR {(total - collected).toLocaleString()}</p></div>
@@ -213,6 +247,15 @@ const ClientDetail: React.FC<ClientDetailProps> = ({
                          </div>
                        )
                     })()}
+                 </div>
+                 <div className="bg-slate-50 p-10 rounded-[20px] border border-slate-200 space-y-4">
+                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Project Leaders</p>
+                    <div className="flex -space-x-2 overflow-hidden">
+                       {staff.filter(s => selectedProject.adminIds?.includes(s.id)).map(s => (
+                         <img key={s.id} className="inline-block h-8 w-8 rounded-full ring-2 ring-white" src={s.avatar} alt="" title={s.name} />
+                       ))}
+                    </div>
+                    <p className="text-[9px] font-bold text-slate-400 uppercase">Assigned Operational Unit</p>
                  </div>
                  <div className="bg-slate-50 p-10 rounded-[20px] border border-slate-200 space-y-4">
                     <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Scheduling</p>

@@ -1,6 +1,6 @@
 
-import React, { useState } from 'react';
-import { Customer, User, Project, ProjectTask, SystemManifest, Service, UserRole } from '../types';
+import React, { useState, useMemo } from 'react';
+import { Customer, User, Project, ProjectTask, SystemManifest, Service } from '../types';
 
 interface ProjectCreateProps {
   customers: Customer[];
@@ -26,7 +26,7 @@ const ProjectCreate: React.FC<ProjectCreateProps> = ({
     name: '',
     description: '',
     clientId: '',
-    adminId: currentUser.id,
+    adminIds: [currentUser.id],
     value: 0,
     costs: 0,
     awardRef: '',
@@ -38,6 +38,18 @@ const ProjectCreate: React.FC<ProjectCreateProps> = ({
     serviceIds: [],
     attachments: []
   });
+
+  const vatAmount = useMemo(() => (formData.value || 0) * 0.15, [formData.value]);
+  const totalWithVat = useMemo(() => (formData.value || 0) + vatAmount, [formData.value, vatAmount]);
+
+  const toggleStaffAssignment = (staffId: string) => {
+    const current = formData.adminIds || [];
+    if (current.includes(staffId)) {
+      setFormData({ ...formData, adminIds: current.filter(id => id !== staffId) });
+    } else {
+      setFormData({ ...formData, adminIds: [...current, staffId] });
+    }
+  };
 
   const handleAddService = (serviceId: string) => {
     const current = formData.serviceIds || [];
@@ -135,10 +147,23 @@ const ProjectCreate: React.FC<ProjectCreateProps> = ({
                     </select>
                  </div>
                  <div className="space-y-1.5">
-                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Project Manager</label>
-                    <select required className="w-full px-6 py-4 bg-slate-50 border border-slate-200 rounded-[15px] outline-none text-sm font-bold appearance-none cursor-pointer" value={formData.adminId} onChange={e => setFormData({...formData, adminId: e.target.value})}>
-                       {staff.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
-                    </select>
+                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Assigned Support Staff (Multi-Select)</label>
+                    <div className="p-4 bg-slate-50 border border-slate-200 rounded-[15px] max-h-[200px] overflow-y-auto space-y-2">
+                       {staff.map(s => (
+                         <label key={s.id} className="flex items-center gap-3 p-2 hover:bg-white rounded-lg cursor-pointer transition-colors">
+                            <input 
+                              type="checkbox" 
+                              checked={formData.adminIds?.includes(s.id)} 
+                              onChange={() => toggleStaffAssignment(s.id)}
+                              className="w-4 h-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500" 
+                            />
+                            <div className="flex items-center gap-2">
+                               <img src={s.avatar} className="w-6 h-6 rounded-full" alt="" />
+                               <span className="text-xs font-medium text-slate-700">{s.name}</span>
+                            </div>
+                         </label>
+                       ))}
+                    </div>
                  </div>
                </div>
              </div>
@@ -191,7 +216,7 @@ const ProjectCreate: React.FC<ProjectCreateProps> = ({
            <div className="bg-white p-10 rounded-[24px] border border-slate-200 shadow-sm space-y-8">
               <div className="flex items-center gap-4 border-b border-slate-50 pb-6">
                  <div className="w-10 h-10 rounded-full bg-slate-900 flex items-center justify-center text-white"><AccountingIcon /></div>
-                 <h3 className="text-lg font-medium text-slate-900">Financial Layer</h3>
+                 <h3 className="text-lg font-medium text-slate-900">Financial Ledger</h3>
               </div>
 
               <div className="space-y-6">
@@ -199,7 +224,20 @@ const ProjectCreate: React.FC<ProjectCreateProps> = ({
                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Base Contract Value (SAR)</label>
                    <input required type="number" className="w-full px-6 py-4 bg-slate-50 border border-slate-200 rounded-[15px] outline-none text-lg font-bold text-slate-900 focus:bg-white focus:ring-1 focus:ring-slate-200 transition-all" value={formData.value || ''} onChange={e => setFormData({...formData, value: Number(e.target.value)})} />
                 </div>
-                <div className="space-y-1.5">
+                
+                {/* AUTO VAT DISPLAY */}
+                <div className="p-6 bg-slate-900 rounded-[20px] shadow-xl text-white space-y-4 animate-in zoom-in-95 duration-300">
+                    <div className="flex justify-between items-center border-b border-white/10 pb-4">
+                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Tax Provision (15%)</p>
+                        <p className="text-lg font-medium text-emerald-400">+ SAR {vatAmount.toLocaleString()}</p>
+                    </div>
+                    <div className="flex justify-between items-center">
+                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Authorized Total</p>
+                        <p className="text-2xl font-bold tracking-tight text-white">SAR {totalWithVat.toLocaleString()}</p>
+                    </div>
+                </div>
+
+                <div className="space-y-1.5 pt-4">
                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Projected Costs</label>
                    <input type="number" className="w-full px-6 py-4 bg-slate-50 border border-slate-200 rounded-[15px] outline-none text-lg font-bold text-slate-500 focus:bg-white transition-all" value={formData.costs || ''} onChange={e => setFormData({...formData, costs: Number(e.target.value)})} />
                 </div>
@@ -265,7 +303,7 @@ const ProjectCreate: React.FC<ProjectCreateProps> = ({
                    className="flex-1 md:flex-none px-16 py-3.5 text-white font-bold rounded-[12px] uppercase text-[11px] tracking-[0.2em] shadow-xl transition-all hover:scale-[1.02] active:scale-[0.98] hover:brightness-110 flex items-center justify-center gap-3"
                    style={{ backgroundColor: manifest.global.primaryColor }}
                  >
-                   Deploy Project & Sync Pipeline
+                   <SaveIcon /> Deploy Project & Sync Pipeline
                  </button>
               </div>
            </div>
@@ -282,6 +320,7 @@ const AccountingIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="
 const TrashIconSmall = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-4v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>;
 const LockIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>;
 const CheckIconSmall = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-emerald-400" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" /></svg>;
+const SaveIcon = () => <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" /></svg>;
 const PulseIconLarge = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-32 w-32" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={0.5} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>;
 
 export default ProjectCreate;

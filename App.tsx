@@ -492,6 +492,7 @@ const App: React.FC = () => {
             customers={customers} 
             staff={staff} 
             projects={projects}
+            tickets={tickets}
             services={services}
             currentUser={currentUser}
             onUpdateProject={handleUpdateProject}

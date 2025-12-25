@@ -197,7 +197,7 @@ export interface Project {
   name: string;
   description: string;
   clientId: string;
-  adminId: string;
+  adminIds: string[];
   value: number;
   costs: number;
   awardRef: string;
