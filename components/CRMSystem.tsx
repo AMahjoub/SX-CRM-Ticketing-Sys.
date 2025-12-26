@@ -15,6 +15,7 @@ interface CRMSystemProps {
 const CRMSystem: React.FC<CRMSystemProps> = ({ customers, setCustomers, currentUser, onDelete, manifest, onViewDetails }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [activeRegistryTab, setActiveRegistryTab] = useState<'APPROVED' | 'PENDING'>('APPROVED');
   const [isAiLoading, setIsAiLoading] = useState(false);
 
@@ -22,9 +23,7 @@ const CRMSystem: React.FC<CRMSystemProps> = ({ customers, setCustomers, currentU
     name: '', company: '', email: '', phone: '', status: 'Lead' as Customer['status'], totalPrice: 0, password: '', industry: '', description: ''
   });
 
-  const canCreate = true;
-  const canDelete = true;
-  const canEdit = true;
+  const [editingCustomer, setEditingCustomer] = useState<Customer | null>(null);
 
   const filteredCustomers = customers.filter(c => 
     (c.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
@@ -40,6 +39,14 @@ const CRMSystem: React.FC<CRMSystemProps> = ({ customers, setCustomers, currentU
 
   const handleAddCustomer = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Check for duplicates by email
+    const exists = customers.some(c => c.email.toLowerCase() === newCustomer.email.toLowerCase());
+    if (exists) {
+      alert("A client with this email already exists in the registry.");
+      return;
+    }
+
     const id = `cust-${Date.now()}`;
     const customer: Customer = {
       ...newCustomer,
@@ -48,11 +55,26 @@ const CRMSystem: React.FC<CRMSystemProps> = ({ customers, setCustomers, currentU
       paidAmount: 0,
       accountStatus: AccountStatus.APPROVED,
       lastContact: new Date().toISOString().split('T')[0],
-      assignedTo: currentUser.id
+      assignedTo: currentUser.id,
+      members: []
     };
     setCustomers(prev => [...prev, customer]);
     setIsAddModalOpen(false);
     setNewCustomer({ name: '', company: '', email: '', phone: '', status: 'Lead', totalPrice: 0, password: '', industry: '', description: '' });
+  };
+
+  const handleEditCustomer = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingCustomer) return;
+
+    setCustomers(prev => prev.map(c => c.id === editingCustomer.id ? editingCustomer : c));
+    setIsEditModalOpen(false);
+    setEditingCustomer(null);
+  };
+
+  const openEditModal = (customer: Customer) => {
+    setEditingCustomer({ ...customer });
+    setIsEditModalOpen(true);
   };
 
   const handleAiOutreach = async (customer: Customer) => {
@@ -86,15 +108,13 @@ const CRMSystem: React.FC<CRMSystemProps> = ({ customers, setCustomers, currentU
               Pending {pendingApprovalsCount > 0 && <span className="bg-rose-500 text-white w-4 h-4 rounded-full flex items-center justify-center text-[8px] animate-pulse">{pendingApprovalsCount}</span>}
             </button>
           </div>
-          {canCreate && (
-            <button 
-              onClick={() => setIsAddModalOpen(true)}
-              className="px-6 py-3 text-white rounded-[10px] font-medium shadow-md flex items-center gap-2 transition-all hover:scale-105"
-              style={{ backgroundColor: manifest.global.primaryColor }}
-            >
-              <PlusIcon /> Register New Client
-            </button>
-          )}
+          <button 
+            onClick={() => setIsAddModalOpen(true)}
+            className="px-6 py-3 text-white rounded-[10px] font-medium shadow-md flex items-center gap-2 transition-all hover:scale-105"
+            style={{ backgroundColor: manifest.global.primaryColor }}
+          >
+            <PlusIcon /> Register New Client
+          </button>
         </div>
       </div>
 
@@ -179,6 +199,12 @@ const CRMSystem: React.FC<CRMSystemProps> = ({ customers, setCustomers, currentU
                             >
                               Deny
                             </button>
+                            <button 
+                              onClick={() => onDelete(customer.id)}
+                              className="text-[10px] font-medium text-rose-600 hover:bg-rose-50 px-4 py-2 rounded-[8px] border border-rose-100 uppercase tracking-widest transition-all"
+                            >
+                              Purge
+                            </button>
                           </>
                         ) : (
                           <>
@@ -193,16 +219,20 @@ const CRMSystem: React.FC<CRMSystemProps> = ({ customers, setCustomers, currentU
                               onClick={() => onViewDetails(customer.id)}
                               className="text-[10px] font-medium text-slate-600 hover:bg-slate-100 px-4 py-2 rounded-[8px] border border-slate-200 uppercase tracking-widest transition-all"
                             >
-                              Profile
+                              Details
                             </button>
-                            {canDelete && (
-                              <button 
-                                onClick={() => onDelete(customer.id)}
-                                className="text-[10px] font-medium text-rose-600 hover:bg-rose-50 px-4 py-2 rounded-[8px] border border-rose-100 uppercase tracking-widest transition-all"
-                              >
-                                Delete
-                              </button>
-                            )}
+                            <button 
+                              onClick={() => openEditModal(customer)}
+                              className="text-[10px] font-medium text-slate-600 hover:bg-slate-100 px-4 py-2 rounded-[8px] border border-slate-200 uppercase tracking-widest transition-all"
+                            >
+                              Edit
+                            </button>
+                            <button 
+                              onClick={() => onDelete(customer.id)}
+                              className="text-[10px] font-medium text-rose-600 hover:bg-rose-50 px-4 py-2 rounded-[8px] border border-rose-100 uppercase tracking-widest transition-all"
+                            >
+                              Delete
+                            </button>
                           </>
                         )}
                       </div>
@@ -224,28 +254,28 @@ const CRMSystem: React.FC<CRMSystemProps> = ({ customers, setCustomers, currentU
                </div>
                <div className="p-8 space-y-4 max-h-[60vh] overflow-y-auto">
                   <div className="space-y-1">
-                    <label className="text-[10px] font-medium text-slate-400 uppercase tracking-widest ml-1">Client Name (Wraps)</label>
-                    <textarea 
-                      required 
-                      rows={1}
-                      className="w-full px-5 py-3 bg-white border border-slate-200 rounded-[10px] outline-none font-normal resize-none break-words whitespace-pre-wrap focus:ring-1 focus:ring-slate-300 transition-all" 
-                      value={newCustomer.name} 
-                      onChange={e => setNewCustomer({...newCustomer, name: e.target.value})} 
-                    />
+                    <label className="text-[10px] font-medium text-slate-400 uppercase tracking-widest ml-1">Primary Contact Name</label>
+                    <input required className="w-full px-5 py-3 bg-white border border-slate-200 rounded-[10px] outline-none font-normal" value={newCustomer.name} onChange={e => setNewCustomer({...newCustomer, name: e.target.value})} />
                   </div>
                   <div className="space-y-1">
-                    <label className="text-[10px] font-medium text-slate-400 uppercase tracking-widest ml-1">Company Entity (Wraps)</label>
-                    <textarea 
-                      required 
-                      rows={1}
-                      className="w-full px-5 py-3 bg-white border border-slate-200 rounded-[10px] outline-none font-normal resize-none break-words whitespace-pre-wrap focus:ring-1 focus:ring-slate-300 transition-all" 
-                      value={newCustomer.company} 
-                      onChange={e => setNewCustomer({...newCustomer, company: e.target.value})} 
-                    />
+                    <label className="text-[10px] font-medium text-slate-400 uppercase tracking-widest ml-1">Company Entity</label>
+                    <input required className="w-full px-5 py-3 bg-white border border-slate-200 rounded-[10px] outline-none font-normal" value={newCustomer.company} onChange={e => setNewCustomer({...newCustomer, company: e.target.value})} />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-medium text-slate-400 uppercase tracking-widest ml-1">Industry</label>
+                    <input className="w-full px-5 py-3 bg-white border border-slate-200 rounded-[10px] outline-none font-normal" placeholder="e.g. Technology, Finance" value={newCustomer.industry} onChange={e => setNewCustomer({...newCustomer, industry: e.target.value})} />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-medium text-slate-400 uppercase tracking-widest ml-1">Client Description</label>
+                    <textarea rows={3} className="w-full px-5 py-3 bg-white border border-slate-200 rounded-[10px] outline-none font-normal resize-none" placeholder="Add internal notes, project history, or client preferences..." value={newCustomer.description} onChange={e => setNewCustomer({...newCustomer, description: e.target.value})} />
                   </div>
                   <div className="space-y-1">
                     <label className="text-[10px] font-medium text-slate-400 uppercase tracking-widest ml-1">Work Email</label>
                     <input required type="email" className="w-full px-5 py-3 bg-white border border-slate-200 rounded-[10px] outline-none font-normal" value={newCustomer.email} onChange={e => setNewCustomer({...newCustomer, email: e.target.value})} />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-medium text-slate-400 uppercase tracking-widest ml-1">Phone</label>
+                    <input className="w-full px-5 py-3 bg-white border border-slate-200 rounded-[10px] outline-none font-normal" value={newCustomer.phone} onChange={e => setNewCustomer({...newCustomer, phone: e.target.value})} />
                   </div>
                </div>
                <div className="p-8 bg-slate-50 flex gap-4">
@@ -256,6 +286,63 @@ const CRMSystem: React.FC<CRMSystemProps> = ({ customers, setCustomers, currentU
                   style={{ backgroundColor: manifest.global.primaryColor }}
                  >
                    Create Profile
+                 </button>
+               </div>
+             </form>
+           </div>
+        </div>
+      )}
+
+      {isEditModalOpen && editingCustomer && (
+        <div className="fixed inset-0 bg-[#262626]/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+           <div className="bg-white rounded-[10px] w-full max-w-lg shadow-2xl animate-in zoom-in-95 duration-200 overflow-hidden">
+             <form onSubmit={handleEditCustomer}>
+               <div className="p-8 border-b border-slate-100">
+                 <h3 className="text-2xl font-medium text-slate-900 tracking-tight">Update Client Profile</h3>
+               </div>
+               <div className="p-8 space-y-4 max-h-[60vh] overflow-y-auto">
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-medium text-slate-400 uppercase tracking-widest ml-1">Primary Contact Name</label>
+                    <input required className="w-full px-5 py-3 bg-white border border-slate-200 rounded-[10px] outline-none font-normal" value={editingCustomer.name} onChange={e => setEditingCustomer({...editingCustomer, name: e.target.value})} />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-medium text-slate-400 uppercase tracking-widest ml-1">Company Entity</label>
+                    <input required className="w-full px-5 py-3 bg-white border border-slate-200 rounded-[10px] outline-none font-normal" value={editingCustomer.company} onChange={e => setEditingCustomer({...editingCustomer, company: e.target.value})} />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-medium text-slate-400 uppercase tracking-widest ml-1">Industry</label>
+                    <input className="w-full px-5 py-3 bg-white border border-slate-200 rounded-[10px] outline-none font-normal" placeholder="e.g. Technology, Finance" value={editingCustomer.industry || ''} onChange={e => setEditingCustomer({...editingCustomer, industry: e.target.value})} />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-medium text-slate-400 uppercase tracking-widest ml-1">Client Description</label>
+                    <textarea rows={3} className="w-full px-5 py-3 bg-white border border-slate-200 rounded-[10px] outline-none font-normal resize-none" placeholder="Add internal notes, project history, or client preferences..." value={editingCustomer.description || ''} onChange={e => setEditingCustomer({...editingCustomer, description: e.target.value})} />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-medium text-slate-400 uppercase tracking-widest ml-1">Work Email</label>
+                    <input required type="email" className="w-full px-5 py-3 bg-white border border-slate-200 rounded-[10px] outline-none font-normal" value={editingCustomer.email} onChange={e => setEditingCustomer({...editingCustomer, email: e.target.value})} />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-medium text-slate-400 uppercase tracking-widest ml-1">Phone</label>
+                    <input className="w-full px-5 py-3 bg-white border border-slate-200 rounded-[10px] outline-none font-normal" value={editingCustomer.phone} onChange={e => setEditingCustomer({...editingCustomer, phone: e.target.value})} />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-medium text-slate-400 uppercase tracking-widest ml-1">Account Status</label>
+                    <select className="w-full px-5 py-3 bg-white border border-slate-200 rounded-[10px] outline-none font-normal" value={editingCustomer.status} onChange={e => setEditingCustomer({...editingCustomer, status: e.target.value as any})}>
+                      <option value="Lead">Lead</option>
+                      <option value="Prospect">Prospect</option>
+                      <option value="Active">Active</option>
+                      <option value="Churned">Churned</option>
+                    </select>
+                  </div>
+               </div>
+               <div className="p-8 bg-slate-50 flex gap-4">
+                 <button type="button" onClick={() => { setIsEditModalOpen(false); setEditingCustomer(null); }} className="flex-1 py-4 font-medium text-slate-400 uppercase text-xs">Cancel</button>
+                 <button 
+                  type="submit" 
+                  className="flex-1 py-4 text-white font-medium rounded-[10px] uppercase text-xs shadow-md transition-all"
+                  style={{ backgroundColor: manifest.global.primaryColor }}
+                 >
+                   Save Changes
                  </button>
                </div>
              </form>

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { User, UserRole, SystemManifest, ViewType, CrudPermissions } from '../types';
 
@@ -80,21 +79,21 @@ const StaffEditor: React.FC<StaffEditorProps> = ({ staffMember, manifest, onUpda
                     <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Display Name (Wraps)</label>
                     <textarea 
                       rows={1}
-                      className="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-[12px] outline-none text-sm font-medium resize-none break-words whitespace-pre-wrap focus:bg-white focus:ring-1 focus:ring-slate-200" 
+                      className="w-full px-5 py-3.5 bg-white border border-slate-200 rounded-[12px] outline-none text-sm font-medium resize-none break-words whitespace-pre-wrap focus:bg-white focus:ring-1 focus:ring-slate-200" 
                       value={formData.name} 
                       onChange={e => setFormData({...formData, name: e.target.value})} 
                     />
                  </div>
                  <div className="space-y-1.5">
                     <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Registry Email</label>
-                    <input className="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-[12px] outline-none text-sm font-medium break-all" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} />
+                    <input className="w-full px-5 py-3.5 bg-white border border-slate-200 rounded-[12px] outline-none text-sm font-medium break-all" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} />
                  </div>
                  <div className="space-y-1.5">
                     <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Security Passphrase</label>
                     <div className="relative">
                       <input 
                         type={showPassword ? "text" : "password"}
-                        className="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-[12px] outline-none text-sm font-bold tracking-widest" 
+                        className="w-full px-5 py-3.5 bg-white border border-slate-200 rounded-[12px] outline-none text-sm font-bold tracking-widest" 
                         value={formData.password} 
                         onChange={e => setFormData({...formData, password: e.target.value})} 
                       />
@@ -109,7 +108,7 @@ const StaffEditor: React.FC<StaffEditorProps> = ({ staffMember, manifest, onUpda
                  </div>
                  <div className="space-y-1.5">
                     <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Access Tier</label>
-                    <select className="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-[12px] outline-none appearance-none cursor-pointer text-sm font-bold" value={formData.role} onChange={e => setFormData({...formData, role: e.target.value as UserRole})}>
+                    <select className="w-full px-5 py-3.5 bg-white border border-slate-200 rounded-[12px] outline-none appearance-none cursor-pointer text-sm font-bold" value={formData.role} onChange={e => setFormData({...formData, role: e.target.value as UserRole})}>
                        <option value={UserRole.STAFF}>Support Staff</option>
                        <option value={UserRole.ADMIN}>Platform Administrator</option>
                     </select>

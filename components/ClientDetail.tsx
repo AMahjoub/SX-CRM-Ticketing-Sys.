@@ -1,6 +1,6 @@
 
 import React, { useState, useRef } from 'react';
-import { Customer, Project, User, SystemManifest, Attachment, Ticket, TicketStatus } from '../types';
+import { Customer, Project, User, SystemManifest, Attachment, Ticket, TicketStatus, CustomerMember } from '../types';
 
 interface ClientDetailProps {
   customer: Customer;
@@ -12,6 +12,7 @@ interface ClientDetailProps {
   onUpdateProject: (id: string, updates: Partial<Project>) => void;
   onUpdateTicketStatus: (id: string, status: TicketStatus) => void;
   onReplyToTicket: (id: string, text: string, attachments?: Attachment[]) => void;
+  onDelete: () => void;
   onBack: () => void;
 }
 
@@ -23,15 +24,20 @@ const ClientDetail: React.FC<ClientDetailProps> = ({
   manifest,
   onUpdateTicketStatus,
   onUpdateProject,
+  onUpdateCustomer,
   onReplyToTicket,
+  onDelete,
   onBack 
 }) => {
-  const [activeTab, setActiveTab] = useState<'OVERVIEW' | 'PROJECTS' | 'TICKETS'>('OVERVIEW');
+  const [activeTab, setActiveTab] = useState<'OVERVIEW' | 'PROJECTS' | 'TICKETS' | 'MEMBERS'>('OVERVIEW');
   const [selectedTicketId, setSelectedTicketId] = useState<string | null>(null);
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
   const [replyText, setReplyText] = useState('');
   const [replyFiles, setReplyFiles] = useState<Attachment[]>([]);
   
+  const [isMemberModalOpen, setIsMemberModalOpen] = useState(false);
+  const [newMember, setNewMember] = useState({ name: '', email: '', phone: '', role: 'Contact' });
+
   const fileInputRef = useRef<HTMLInputElement>(null);
   const projectFileInputRef = useRef<HTMLInputElement>(null);
 
@@ -83,6 +89,25 @@ const ClientDetail: React.FC<ClientDetailProps> = ({
     setReplyFiles([]);
   };
 
+  const handleAddMember = (e: React.FormEvent) => {
+    e.preventDefault();
+    const member: CustomerMember = {
+      ...newMember,
+      id: `mem-${Date.now()}`
+    };
+    onUpdateCustomer(customer.id, {
+      members: [...(customer.members || []), member]
+    });
+    setIsMemberModalOpen(false);
+    setNewMember({ name: '', email: '', phone: '', role: 'Contact' });
+  };
+
+  const removeMember = (id: string) => {
+    onUpdateCustomer(customer.id, {
+      members: (customer.members || []).filter(m => m.id !== id)
+    });
+  };
+
   return (
     <div className="p-8 space-y-8 animate-in fade-in duration-500 font-sans font-normal">
       <div className="flex justify-between items-center">
@@ -94,11 +119,11 @@ const ClientDetail: React.FC<ClientDetailProps> = ({
           </div>
         </div>
         <div className="flex bg-slate-100 p-1 rounded-[12px] border border-slate-200 shrink-0">
-          {['OVERVIEW', 'PROJECTS', 'TICKETS'].map(tab => (
+          {['OVERVIEW', 'PROJECTS', 'TICKETS', 'MEMBERS'].map(tab => (
             <button 
               key={tab} 
               onClick={() => { setActiveTab(tab as any); setSelectedProjectId(null); }} 
-              className={`px-8 py-2 rounded-[10px] text-[10px] font-bold uppercase tracking-widest transition-all ${activeTab === tab ? 'bg-white shadow-sm' : 'text-slate-400'}`} 
+              className={`px-6 py-2 rounded-[10px] text-[10px] font-bold uppercase tracking-widest transition-all ${activeTab === tab ? 'bg-white shadow-sm' : 'text-slate-400'}`} 
               style={activeTab === tab ? { color: manifest.global.primaryColor } : {}}
             >
               {tab}
@@ -112,8 +137,16 @@ const ClientDetail: React.FC<ClientDetailProps> = ({
           <div className="grid grid-cols-3 gap-8 animate-in slide-in-from-bottom-4">
             <div className="col-span-2 space-y-8">
               <div className="bg-white p-10 rounded-[20px] border border-slate-200 shadow-sm">
-                <h3 className="text-xs font-bold text-slate-400 uppercase tracking-[0.2em] mb-6">Internal Profile Registry</h3>
-                <p className="text-slate-700 leading-relaxed font-normal whitespace-pre-wrap break-words">{customer.description || 'No detailed metadata provided for this authorized client.'}</p>
+                <div className="flex justify-between items-start mb-6">
+                   <h3 className="text-xs font-bold text-slate-400 uppercase tracking-[0.2em]">Internal Profile Registry</h3>
+                   <button 
+                    onClick={onDelete}
+                    className="text-[10px] font-bold text-rose-600 hover:bg-rose-50 px-4 py-2 rounded-[8px] border border-rose-100 uppercase tracking-widest transition-all"
+                   >
+                     Revoke Client Identity
+                   </button>
+                </div>
+                <p className="text-slate-700 leading-relaxed font-normal whitespace-pre-wrap break-words">{customer.description || 'Add internal notes or project context via the edit tool in the registry.'}</p>
               </div>
               <div className="grid grid-cols-2 gap-6">
                  <div className="bg-white p-8 rounded-[20px] border border-slate-200 shadow-sm">
@@ -147,6 +180,68 @@ const ClientDetail: React.FC<ClientDetailProps> = ({
                  <p className="text-xs text-slate-400 mt-4 font-normal leading-relaxed italic opacity-80 break-words">This profile is verified and encrypted in the Securelogx infrastructure.</p>
                </div>
             </div>
+          </div>
+        )}
+
+        {activeTab === 'MEMBERS' && (
+          <div className="space-y-8 animate-in slide-in-from-bottom-4">
+            <div className="flex justify-between items-center">
+              <h3 className="text-xl font-medium text-slate-900">Entity Member Registry</h3>
+              <button 
+                onClick={() => setIsMemberModalOpen(true)}
+                className="px-6 py-2 text-white rounded-[10px] font-bold text-[10px] uppercase tracking-widest shadow-md transition-all hover:scale-105"
+                style={{ backgroundColor: manifest.global.primaryColor }}
+              >
+                + Add Member
+              </button>
+            </div>
+            <div className="bg-white rounded-[20px] border border-slate-200 shadow-sm overflow-hidden">
+               <table className="w-full text-left">
+                 <thead className="bg-slate-50 border-b border-slate-100">
+                   <tr className="text-[10px] font-medium text-slate-400 uppercase tracking-widest">
+                     <th className="px-8 py-4">Name</th>
+                     <th className="px-8 py-4">Role</th>
+                     <th className="px-8 py-4">Email</th>
+                     <th className="px-8 py-4 text-right">Action</th>
+                   </tr>
+                 </thead>
+                 <tbody className="divide-y divide-slate-50">
+                   {(customer.members || []).length === 0 ? (
+                     <tr><td colSpan={4} className="px-8 py-10 text-center text-slate-400 text-sm">No secondary members provisioned.</td></tr>
+                   ) : (
+                     customer.members?.map(m => (
+                       <tr key={m.id}>
+                         <td className="px-8 py-5 text-sm font-medium text-slate-900">{m.name}</td>
+                         <td className="px-8 py-5 text-xs font-medium text-slate-500 uppercase">{m.role}</td>
+                         <td className="px-8 py-5 text-sm text-slate-600">{m.email}</td>
+                         <td className="px-8 py-5 text-right">
+                           <button onClick={() => removeMember(m.id)} className="text-rose-500 hover:underline text-xs font-bold uppercase">Remove</button>
+                         </td>
+                       </tr>
+                     ))
+                   )}
+                 </tbody>
+               </table>
+            </div>
+
+            {isMemberModalOpen && (
+              <div className="fixed inset-0 bg-[#262626]/40 backdrop-blur-sm z-[150] flex items-center justify-center p-4">
+                <div className="bg-white rounded-[15px] w-full max-w-md shadow-2xl overflow-hidden">
+                  <form onSubmit={handleAddMember}>
+                    <div className="p-8 border-b border-slate-100"><h3 className="text-xl font-bold">New Entity Member</h3></div>
+                    <div className="p-8 space-y-4">
+                      <input required placeholder="Name" className="w-full px-4 py-3 bg-white border border-slate-200 rounded-lg outline-none" value={newMember.name} onChange={e => setNewMember({...newMember, name: e.target.value})} />
+                      <input required placeholder="Email" type="email" className="w-full px-4 py-3 bg-white border border-slate-200 rounded-lg outline-none" value={newMember.email} onChange={e => setNewMember({...newMember, email: e.target.value})} />
+                      <input placeholder="Role" className="w-full px-4 py-3 bg-white border border-slate-200 rounded-lg outline-none" value={newMember.role} onChange={e => setNewMember({...newMember, role: e.target.value})} />
+                    </div>
+                    <div className="p-8 bg-slate-50 flex gap-4">
+                      <button type="button" onClick={() => setIsMemberModalOpen(false)} className="flex-1 font-bold text-slate-400">Cancel</button>
+                      <button type="submit" className="flex-1 py-3 text-white rounded-lg font-bold" style={{ backgroundColor: manifest.global.primaryColor }}>Provision Member</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            )}
           </div>
         )}
 
@@ -356,7 +451,7 @@ const ClientDetail: React.FC<ClientDetailProps> = ({
 };
 
 const BackIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" /></svg>;
-const BackIconSmall = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M15 19l-7-7 7-7" /></svg>;
+const BackIconSmall = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-3 -3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M15 19l-7-7 7-7" /></svg>;
 const FileIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>;
 const DownloadIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>;
 const PaperClipIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" /></svg>;

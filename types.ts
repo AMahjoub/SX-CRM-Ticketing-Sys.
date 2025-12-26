@@ -238,6 +238,14 @@ export interface ExpectedCollection {
   note: string;
 }
 
+export interface CustomerMember {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  role: string;
+}
+
 export interface Customer {
   id: string;
   name: string;
@@ -254,6 +262,7 @@ export interface Customer {
   password?: string;
   description?: string;
   industry?: string;
+  members?: CustomerMember[];
 }
 
 export type ViewType = 'DASHBOARD' | 'TICKETS' | 'CRM' | 'PROJECT_PIPELINE' | 'FINANCIAL_PIPELINE' | 'ADMIN_MGMT' | 'CLIENT_PORTAL' | 'SETTINGS' | 'CLIENT_DETAIL' | 'SERVICES_CATALOG' | 'STAFF_EDIT' | 'PROJECT_CREATE' | 'AUDIT_LOG';

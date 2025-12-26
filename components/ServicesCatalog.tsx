@@ -99,7 +99,7 @@ const ServicesCatalog: React.FC<ServicesCatalogProps> = ({ services, onAdd, onUp
                     <textarea 
                       required 
                       rows={1}
-                      className="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-[12px] outline-none text-sm font-medium focus:bg-white focus:ring-1 focus:ring-slate-200 transition-all resize-none break-words whitespace-pre-wrap" 
+                      className="w-full px-5 py-3.5 bg-white border border-slate-200 rounded-[12px] outline-none text-sm font-medium focus:bg-white focus:ring-1 focus:ring-slate-200 transition-all resize-none break-words whitespace-pre-wrap" 
                       placeholder="e.g. Infrastructure Audit" 
                       value={formData.name} 
                       onChange={e => setFormData({...formData, name: e.target.value})} 
@@ -109,7 +109,7 @@ const ServicesCatalog: React.FC<ServicesCatalogProps> = ({ services, onAdd, onUp
                     <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Contextual Description</label>
                     <textarea 
                       rows={3} 
-                      className="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-[12px] outline-none text-sm font-normal resize-none focus:bg-white focus:ring-1 focus:ring-slate-200 transition-all break-words whitespace-pre-wrap" 
+                      className="w-full px-5 py-3.5 bg-white border border-slate-200 rounded-[12px] outline-none text-sm font-normal resize-none focus:bg-white focus:ring-1 focus:ring-slate-200 transition-all break-words whitespace-pre-wrap" 
                       placeholder="Detail the scope of this offering..." 
                       value={formData.description} 
                       onChange={e => setFormData({...formData, description: e.target.value})} 
@@ -117,7 +117,7 @@ const ServicesCatalog: React.FC<ServicesCatalogProps> = ({ services, onAdd, onUp
                   </div>
                   <div className="space-y-1.5">
                     <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Standard Base Price ({manifest.global.currency})</label>
-                    <input required type="number" className="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-[12px] outline-none font-bold text-sm focus:bg-white focus:ring-1 focus:ring-slate-200 transition-all" placeholder="0" value={formData.basePrice || ''} onChange={e => setFormData({...formData, basePrice: Number(e.target.value)})} />
+                    <input required type="number" className="w-full px-5 py-3.5 bg-white border border-slate-200 rounded-[12px] outline-none font-bold text-sm focus:bg-white focus:ring-1 focus:ring-slate-200 transition-all" placeholder="0" value={formData.basePrice || ''} onChange={e => setFormData({...formData, basePrice: Number(e.target.value)})} />
                   </div>
                </div>
                <div className="p-8 bg-slate-50 border-t border-slate-100 flex gap-4">
@@ -140,7 +140,7 @@ const ServicesCatalog: React.FC<ServicesCatalogProps> = ({ services, onAdd, onUp
 
 const PlusIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-    <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 011-1z" clipRule="evenodd" />
+    <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
   </svg>
 );
 

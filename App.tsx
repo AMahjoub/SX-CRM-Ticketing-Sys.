@@ -241,27 +241,38 @@ const App: React.FC = () => {
   };
 
   const handleDeleteCustomer = useCallback((id: string) => {
-    if (confirm('Permanently delete this client and all associated records?')) {
-      const target = customers.find(c => c.id === id);
-      setCustomers(prev => prev.filter(c => c.id !== id));
+    if (window.confirm('Permanently delete this client and all associated records?')) {
+      setCustomers(prev => {
+        const target = prev.find(c => c.id === id);
+        if (target) logAction(target, null);
+        return prev.filter(c => c.id !== id);
+      });
       setProjects(prev => prev.filter(p => p.clientId !== id));
       setTickets(prev => prev.filter(t => t.clientId !== id));
-      if (selectedClientId === id) setSelectedClientId(null);
-      logAction(target, null);
+      
+      setSelectedClientId(prev => {
+        if (prev === id) {
+          setCurrentView('CRM');
+          return null;
+        }
+        return prev;
+      });
     }
-  }, [selectedClientId, customers, logAction]);
+  }, [logAction]);
 
   const handleDeleteStaff = useCallback((id: string) => {
     if (id === 'u-admin') {
       alert('Root administrator cannot be deleted.');
       return;
     }
-    if (confirm('Revoke access and delete this staff member?')) {
-      const target = staff.find(s => s.id === id);
-      setStaff(prev => prev.filter(s => s.id !== id));
-      logAction(target, null);
+    if (window.confirm('Revoke access and delete this staff member?')) {
+      setStaff(prev => {
+        const target = prev.find(s => s.id === id);
+        if (target) logAction(target, null);
+        return prev.filter(s => s.id !== id);
+      });
     }
-  }, [staff, logAction]);
+  }, [logAction]);
 
   const addTicketMessage = useCallback((ticketId: string, text: string, attachments?: Attachment[]) => {
     setTickets(prev => prev.map(t => {
@@ -358,12 +369,14 @@ const App: React.FC = () => {
   }, [currentUser]);
 
   const handleUpdateStaff = (id: string, updates: Partial<User>) => {
-    const before = staff.find(s => s.id === id);
-    setStaff(prev => prev.map(s => s.id === id ? { ...s, ...updates } : s));
+    setStaff(prev => {
+        const before = prev.find(s => s.id === id);
+        if (before) logAction(before, updates);
+        return prev.map(s => s.id === id ? { ...s, ...updates } : s);
+    });
     if (currentUser && currentUser.id === id) {
       setCurrentUser(prev => prev ? { ...prev, ...updates } : null);
     }
-    logAction(before, updates);
   };
 
   const addStaff = (newMember: User) => {
@@ -376,14 +389,18 @@ const App: React.FC = () => {
     logAction(null, srv);
   };
   const handleUpdateService = (id: string, updates: Partial<Service>) => {
-    const before = services.find(s => s.id === id);
-    setServices(prev => prev.map(s => s.id === id ? { ...s, ...updates } : s));
-    logAction(before, updates);
+    setServices(prev => {
+        const before = prev.find(s => s.id === id);
+        if (before) logAction(before, updates);
+        return prev.map(s => s.id === id ? { ...s, ...updates } : s);
+    });
   };
   const handleDeleteService = (id: string) => {
-    const target = services.find(s => s.id === id);
-    setServices(prev => prev.filter(s => s.id !== id));
-    logAction(target, null);
+    setServices(prev => {
+        const target = prev.find(s => s.id === id);
+        if (target) logAction(target, null);
+        return prev.filter(s => s.id !== id);
+    });
   };
 
   const mainContent = useMemo(() => {
@@ -442,6 +459,7 @@ const App: React.FC = () => {
             onUpdateProject={handleUpdateProject}
             onUpdateTicketStatus={updateTicketStatus}
             onReplyToTicket={addTicketMessage}
+            onDelete={() => handleDeleteCustomer(client.id)}
             onBack={() => { setCurrentView('CRM'); setSelectedClientId(null); }}
           />
         );
@@ -627,12 +645,13 @@ const App: React.FC = () => {
 
         <main className="flex-1 overflow-y-auto">
           {mainContent}
-          <footer className="p-10 text-center">
-            <p className="text-[10px] text-slate-400 font-medium uppercase tracking-[0.3em]">
-              Saudi Made By <a href="https://www.sx.sa" target="_blank" rel="noopener noreferrer" className="hover:underline transition-all" style={{ color: manifest.global.primaryColor }}>Securelogx</a> , &copy; All Rights Reserved {new Date().getFullYear()}.
-            </p>
-          </footer>
         </main>
+
+        <footer className="h-14 bg-white border-t border-slate-200 flex items-center justify-center px-8 shrink-0 z-10">
+          <p className="text-[10px] text-slate-400 font-medium uppercase tracking-[0.3em]">
+            Saudi Made By <a href="https://www.sx.sa" target="_blank" rel="noopener noreferrer" className="hover:underline transition-all" style={{ color: manifest.global.primaryColor }}>Securelogx</a> , &copy; All Rights Reserved {new Date().getFullYear()}.
+          </p>
+        </footer>
       </div>
     </div>
   );

@@ -1,4 +1,3 @@
-
 import React, { useState, useMemo } from 'react';
 import { Customer, User, Project, ProjectTask, SystemManifest, Service } from '../types';
 
@@ -121,7 +120,7 @@ const ProjectCreate: React.FC<ProjectCreateProps> = ({
                   <textarea 
                     required 
                     rows={1}
-                    className="w-full px-6 py-4 bg-slate-50 border border-slate-200 rounded-[15px] outline-none text-sm font-medium focus:bg-white focus:ring-1 focus:ring-slate-200 transition-all resize-none break-words break-all whitespace-pre-wrap min-h-[56px]" 
+                    className="w-full px-6 py-4 bg-white border border-slate-200 rounded-[15px] outline-none text-sm font-medium focus:bg-white focus:ring-1 focus:ring-slate-200 transition-all resize-none break-words break-all whitespace-pre-wrap min-h-[56px]" 
                     placeholder="Project Name..." 
                     value={formData.name} 
                     onChange={e => setFormData({...formData, name: e.target.value})} 
@@ -131,7 +130,7 @@ const ProjectCreate: React.FC<ProjectCreateProps> = ({
                   <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Operational Description</label>
                   <textarea 
                     rows={4} 
-                    className="w-full px-6 py-4 bg-slate-50 border border-slate-200 rounded-[15px] outline-none text-sm font-normal focus:bg-white focus:ring-1 focus:ring-slate-200 transition-all resize-none break-words whitespace-pre-wrap" 
+                    className="w-full px-6 py-4 bg-white border border-slate-200 rounded-[15px] outline-none text-sm font-normal focus:bg-white focus:ring-1 focus:ring-slate-200 transition-all resize-none break-words whitespace-pre-wrap" 
                     placeholder="Detail the scope of this project..." 
                     value={formData.description} 
                     onChange={e => setFormData({...formData, description: e.target.value})} 
@@ -141,16 +140,16 @@ const ProjectCreate: React.FC<ProjectCreateProps> = ({
                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                  <div className="space-y-1.5">
                     <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Registry Client</label>
-                    <select required className="w-full px-6 py-4 bg-slate-50 border border-slate-200 rounded-[15px] outline-none text-sm font-bold appearance-none cursor-pointer" value={formData.clientId} onChange={e => setFormData({...formData, clientId: e.target.value})}>
+                    <select required className="w-full px-6 py-4 bg-white border border-slate-200 rounded-[15px] outline-none text-sm font-bold appearance-none cursor-pointer" value={formData.clientId} onChange={e => setFormData({...formData, clientId: e.target.value})}>
                        <option value="">Select Entity...</option>
                        {customers.map(c => <option key={c.id} value={c.id}>{c.company} ({c.name})</option>)}
                     </select>
                  </div>
                  <div className="space-y-1.5">
                     <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Assigned Support Staff (Multi-Select)</label>
-                    <div className="p-4 bg-slate-50 border border-slate-200 rounded-[15px] max-h-[200px] overflow-y-auto space-y-2">
+                    <div className="p-4 bg-white border border-slate-200 rounded-[15px] max-h-[200px] overflow-y-auto space-y-2">
                        {staff.map(s => (
-                         <label key={s.id} className="flex items-center gap-3 p-2 hover:bg-white rounded-lg cursor-pointer transition-colors">
+                         <label key={s.id} className="flex items-center gap-3 p-2 hover:bg-slate-50 rounded-lg cursor-pointer transition-colors">
                             <input 
                               type="checkbox" 
                               checked={formData.adminIds?.includes(s.id)} 
@@ -222,7 +221,7 @@ const ProjectCreate: React.FC<ProjectCreateProps> = ({
               <div className="space-y-6">
                 <div className="space-y-1.5">
                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Base Contract Value (SAR)</label>
-                   <input required type="number" className="w-full px-6 py-4 bg-slate-50 border border-slate-200 rounded-[15px] outline-none text-lg font-bold text-slate-900 focus:bg-white focus:ring-1 focus:ring-slate-200 transition-all" value={formData.value || ''} onChange={e => setFormData({...formData, value: Number(e.target.value)})} />
+                   <input required type="number" className="w-full px-6 py-4 bg-white border border-slate-200 rounded-[15px] outline-none text-lg font-bold text-slate-900 focus:bg-white focus:ring-1 focus:ring-slate-200 transition-all" value={formData.value || ''} onChange={e => setFormData({...formData, value: Number(e.target.value)})} />
                 </div>
                 
                 {/* AUTO VAT DISPLAY */}
@@ -239,16 +238,16 @@ const ProjectCreate: React.FC<ProjectCreateProps> = ({
 
                 <div className="space-y-1.5 pt-4">
                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Projected Costs</label>
-                   <input type="number" className="w-full px-6 py-4 bg-slate-50 border border-slate-200 rounded-[15px] outline-none text-lg font-bold text-slate-500 focus:bg-white transition-all" value={formData.costs || ''} onChange={e => setFormData({...formData, costs: Number(e.target.value)})} />
+                   <input type="number" className="w-full px-6 py-4 bg-white border border-slate-200 rounded-[15px] outline-none text-lg font-bold text-slate-500 focus:bg-white transition-all" value={formData.costs || ''} onChange={e => setFormData({...formData, costs: Number(e.target.value)})} />
                 </div>
                 <div className="grid grid-cols-1 gap-6 pt-4 border-t border-slate-50">
                   <div className="space-y-1.5">
                     <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Award Ref (GCP/Tender)</label>
-                    <input className="w-full px-6 py-4 bg-slate-50 border border-slate-200 rounded-[15px] outline-none text-xs font-bold" placeholder="REF-000-000" value={formData.awardRef} onChange={e => setFormData({...formData, awardRef: e.target.value})} />
+                    <input className="w-full px-6 py-4 bg-white border border-slate-200 rounded-[15px] outline-none text-xs font-bold" placeholder="REF-000-000" value={formData.awardRef} onChange={e => setFormData({...formData, awardRef: e.target.value})} />
                   </div>
                   <div className="space-y-1.5">
                     <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Invoice Master Ref</label>
-                    <input className="w-full px-6 py-4 bg-slate-50 border border-slate-200 rounded-[15px] outline-none text-xs font-bold" placeholder="INV-MASTER" value={formData.invoiceRef} onChange={e => setFormData({...formData, invoiceRef: e.target.value})} />
+                    <input className="w-full px-6 py-4 bg-white border border-slate-200 rounded-[15px] outline-none text-xs font-bold" placeholder="INV-MASTER" value={formData.invoiceRef} onChange={e => setFormData({...formData, invoiceRef: e.target.value})} />
                   </div>
                 </div>
               </div>
@@ -257,11 +256,11 @@ const ProjectCreate: React.FC<ProjectCreateProps> = ({
            <div className="bg-white p-10 rounded-[24px] border border-slate-200 shadow-sm space-y-6">
               <div className="space-y-1.5">
                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Launch Date</label>
-                 <input type="date" className="w-full px-6 py-4 bg-slate-50 border border-slate-200 rounded-[15px] outline-none text-sm font-bold" value={formData.startDate} onChange={e => setFormData({...formData, startDate: e.target.value})} />
+                 <input type="date" className="w-full px-6 py-4 bg-white border border-slate-200 rounded-[15px] outline-none text-sm font-bold" value={formData.startDate} onChange={e => setFormData({...formData, startDate: e.target.value})} />
               </div>
               <div className="space-y-1.5">
                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Target End Date</label>
-                 <input type="date" className="w-full px-6 py-4 bg-slate-50 border border-slate-200 rounded-[15px] outline-none text-sm font-bold" value={formData.endDate} onChange={e => setFormData({...formData, endDate: e.target.value})} />
+                 <input type="date" className="w-full px-6 py-4 bg-white border border-slate-200 rounded-[15px] outline-none text-sm font-bold" value={formData.endDate} onChange={e => setFormData({...formData, endDate: e.target.value})} />
               </div>
            </div>
 

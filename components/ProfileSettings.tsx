@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { User, UserRole, SystemManifest } from '../types';
 
@@ -154,14 +153,14 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ user, onUpdate, manif
                     <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Full Identity Name (Wraps)</label>
                     <textarea 
                       rows={1}
-                      className="w-full px-6 py-4 bg-slate-50 border border-slate-200 rounded-[15px] outline-none font-medium text-sm focus:bg-white focus:ring-1 focus:ring-slate-300 transition-all resize-none break-words break-all whitespace-pre-wrap" 
+                      className="w-full px-6 py-4 bg-white border border-slate-200 rounded-[15px] outline-none font-medium text-sm focus:bg-white focus:ring-1 focus:ring-slate-300 transition-all resize-none break-words break-all whitespace-pre-wrap" 
                       value={name} 
                       onChange={e => setName(e.target.value)} 
                     />
                  </div>
                  <div className="space-y-1.5">
                     <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Access Passphrase</label>
-                    <input required type="password" className="w-full px-6 py-4 bg-slate-50 border border-slate-200 rounded-[15px] outline-none font-bold text-sm focus:bg-white transition-all" placeholder="New passphrase" value={password} onChange={e => setPassword(e.target.value)} />
+                    <input required type="password" className="w-full px-6 py-4 bg-white border border-slate-200 rounded-[15px] outline-none font-bold text-sm focus:bg-white transition-all" placeholder="New passphrase" value={password} onChange={e => setPassword(e.target.value)} />
                  </div>
               </div>
               <button type="submit" className="px-12 py-4 text-white font-bold rounded-[12px] shadow-lg uppercase text-[10px] tracking-[0.2em] transition-all hover:brightness-110 active:scale-95" style={{ backgroundColor: manifest.global.primaryColor }}>Update Identity Profile</button>
@@ -325,7 +324,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ user, onUpdate, manif
                         <label className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] ml-1">Primary Brand Color</label>
                         <div className="flex gap-4">
                            <input 
-                                className="flex-1 px-6 py-4 bg-slate-50 border border-slate-200 rounded-[15px] text-sm font-bold outline-none uppercase" 
+                                className="flex-1 px-6 py-4 bg-white border border-slate-200 rounded-[15px] text-sm font-bold outline-none uppercase" 
                                 value={localManifest.global.primaryColor} 
                                 onChange={e => updateStudioField('global', 'primaryColor', e.target.value)} 
                            />
@@ -336,7 +335,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ user, onUpdate, manif
                         <label className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] ml-1">System Label (Wraps)</label>
                         <textarea 
                             rows={1}
-                            className="w-full px-6 py-4 bg-slate-50 border border-slate-200 rounded-[15px] text-sm font-bold outline-none resize-none break-words break-all whitespace-pre-wrap focus:bg-white focus:ring-1 focus:ring-slate-300 min-h-[56px]" 
+                            className="w-full px-6 py-4 bg-white border border-slate-200 rounded-[15px] text-sm font-bold outline-none resize-none break-words break-all whitespace-pre-wrap focus:bg-white focus:ring-1 focus:ring-slate-300 min-h-[56px]" 
                             value={localManifest.global.siteTitle} 
                             onChange={e => updateStudioField('global', 'siteTitle', e.target.value)} 
                         />
@@ -371,7 +370,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ user, onUpdate, manif
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
                         <div className="space-y-2">
                             <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Provider Engine</label>
-                            <select className="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-[12px] outline-none text-sm font-bold" value={localManifest.email.provider} onChange={e => updateStudioField('email', 'provider', e.target.value)}>
+                            <select className="w-full px-5 py-3.5 bg-white border border-slate-200 rounded-[12px] outline-none text-sm font-bold" value={localManifest.email.provider} onChange={e => updateStudioField('email', 'provider', e.target.value)}>
                                 <option value="SMTP">Standard SMTP Relay</option>
                                 <option value="SENDGRID">SendGrid API</option>
                                 <option value="MAILGUN">Mailgun Logic</option>
@@ -380,13 +379,13 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ user, onUpdate, manif
                         </div>
                         <div className="space-y-2">
                             <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">SMTP Endpoint</label>
-                            <input className="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-[12px] text-sm font-medium outline-none" value={localManifest.email.host} onChange={e => updateStudioField('email', 'host', e.target.value)} />
+                            <input className="w-full px-5 py-3.5 bg-white border border-slate-200 rounded-[12px] text-sm font-medium outline-none" value={localManifest.email.host} onChange={e => updateStudioField('email', 'host', e.target.value)} />
                         </div>
                         <div className="space-y-2">
                             <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Port & Encryption</label>
                             <div className="flex gap-3">
-                                <input type="number" className="w-24 px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-[12px] text-sm font-bold outline-none" value={localManifest.email.port} onChange={e => updateStudioField('email', 'port', Number(e.target.value))} />
-                                <select className="flex-1 px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-[12px] outline-none text-sm font-bold" value={localManifest.email.encryption} onChange={e => updateStudioField('email', 'encryption', e.target.value)}>
+                                <input type="number" className="w-24 px-5 py-3.5 bg-white border border-slate-200 rounded-[12px] text-sm font-bold outline-none" value={localManifest.email.port} onChange={e => updateStudioField('email', 'port', Number(e.target.value))} />
+                                <select className="flex-1 px-5 py-3.5 bg-white border border-slate-200 rounded-[12px] outline-none text-sm font-bold" value={localManifest.email.encryption} onChange={e => updateStudioField('email', 'encryption', e.target.value)}>
                                     <option value="TLS">STARTTLS</option>
                                     <option value="SSL">SSL/TLS</option>
                                     <option value="NONE">Unsecured</option>
@@ -395,15 +394,15 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ user, onUpdate, manif
                         </div>
                         <div className="space-y-2">
                             <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Dispatcher Identity (Wraps)</label>
-                            <textarea rows={1} className="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-[12px] text-sm font-bold outline-none resize-none break-words whitespace-pre-wrap" value={localManifest.email.fromName} onChange={e => updateStudioField('email', 'fromName', e.target.value)} />
+                            <textarea rows={1} className="w-full px-5 py-3.5 bg-white border border-slate-200 rounded-[12px] text-sm font-bold outline-none resize-none break-words whitespace-pre-wrap" value={localManifest.email.fromName} onChange={e => updateStudioField('email', 'fromName', e.target.value)} />
                         </div>
                         <div className="space-y-2">
                             <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">SMTP User Identity</label>
-                            <input className="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-[12px] text-sm font-medium outline-none" value={localManifest.email.auth.user} onChange={e => updateStudioField('email', 'auth.user', e.target.value)} />
+                            <input className="w-full px-5 py-3.5 bg-white border border-slate-200 rounded-[12px] text-sm font-medium outline-none" value={localManifest.email.auth.user} onChange={e => updateStudioField('email', 'auth.user', e.target.value)} />
                         </div>
                         <div className="space-y-2">
                             <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">SMTP Access Passphrase</label>
-                            <input type="password" placeholder="••••••••" className="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-[12px] text-sm font-bold outline-none" value={localManifest.email.auth.pass} onChange={e => updateStudioField('email', 'auth.pass', e.target.value)} />
+                            <input type="password" placeholder="••••••••" className="w-full px-5 py-3.5 bg-white border border-slate-200 rounded-[12px] text-sm font-bold outline-none" value={localManifest.email.auth.pass} onChange={e => updateStudioField('email', 'auth.pass', e.target.value)} />
                         </div>
                     </div>
                     
@@ -445,13 +444,13 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ user, onUpdate, manif
                     <div className={`grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 transition-all duration-500 ${localManifest.email.incomingEnabled ? 'opacity-100' : 'opacity-40 grayscale pointer-events-none'}`}>
                         <div className="space-y-2">
                             <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">IMAP Synchronization Host</label>
-                            <input className="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-[12px] text-sm font-medium outline-none" placeholder="imap.domain.com" value={localManifest.email.incomingHost} onChange={e => updateStudioField('email', 'incomingHost', e.target.value)} />
+                            <input className="w-full px-5 py-3.5 bg-white border border-slate-200 rounded-[12px] text-sm font-medium outline-none" placeholder="imap.domain.com" value={localManifest.email.incomingHost} onChange={e => updateStudioField('email', 'incomingHost', e.target.value)} />
                         </div>
                         <div className="space-y-2">
                             <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Sync Port & Encryption</label>
                             <div className="flex gap-3">
-                                <input type="number" className="w-24 px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-[12px] text-sm font-bold outline-none" value={localManifest.email.incomingPort} onChange={e => updateStudioField('email', 'incomingPort', Number(e.target.value))} />
-                                <select className="flex-1 px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-[12px] outline-none text-sm font-bold" value={localManifest.email.incomingEncryption} onChange={e => updateStudioField('email', 'incomingEncryption', e.target.value)}>
+                                <input type="number" className="w-24 px-5 py-3.5 bg-white border border-slate-200 rounded-[12px] text-sm font-bold outline-none" value={localManifest.email.incomingPort} onChange={e => updateStudioField('email', 'incomingPort', Number(e.target.value))} />
+                                <select className="flex-1 px-5 py-3.5 bg-white border border-slate-200 rounded-[12px] outline-none text-sm font-bold" value={localManifest.email.incomingEncryption} onChange={e => updateStudioField('email', 'incomingEncryption', e.target.value)}>
                                     <option value="SSL">SSL/TLS (Implicit)</option>
                                     <option value="TLS">STARTTLS</option>
                                     <option value="NONE">Unsecured</option>
@@ -460,15 +459,15 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ user, onUpdate, manif
                         </div>
                         <div className="space-y-2">
                             <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Support Registry Identity</label>
-                            <input className="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-[12px] text-sm font-medium outline-none" placeholder="support@domain.com" value={localManifest.email.incomingUser} onChange={e => updateStudioField('email', 'incomingUser', e.target.value)} />
+                            <input className="w-full px-5 py-3.5 bg-white border border-slate-200 rounded-[12px] text-sm font-medium outline-none" placeholder="support@domain.com" value={localManifest.email.incomingUser} onChange={e => updateStudioField('email', 'incomingUser', e.target.value)} />
                         </div>
                         <div className="space-y-2">
                             <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Registry Passphrase</label>
-                            <input type="password" placeholder="••••••••" className="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-[12px] text-sm font-bold outline-none" value={localManifest.email.incomingPass} onChange={e => updateStudioField('email', 'incomingPass', e.target.value)} />
+                            <input type="password" placeholder="••••••••" className="w-full px-5 py-3.5 bg-white border border-slate-200 rounded-[12px] text-sm font-bold outline-none" value={localManifest.email.incomingPass} onChange={e => updateStudioField('email', 'incomingPass', e.target.value)} />
                         </div>
                         <div className="space-y-2">
                             <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Polling Interval (Minutes)</label>
-                            <input type="number" min="1" max="60" className="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-[12px] text-sm font-bold outline-none" value={localManifest.email.fetchInterval} onChange={e => updateStudioField('email', 'fetchInterval', Number(e.target.value))} />
+                            <input type="number" min="1" max="60" className="w-full px-5 py-3.5 bg-white border border-slate-200 rounded-[12px] text-sm font-bold outline-none" value={localManifest.email.fetchInterval} onChange={e => updateStudioField('email', 'fetchInterval', Number(e.target.value))} />
                         </div>
                     </div>
 
@@ -506,7 +505,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ user, onUpdate, manif
                         <label className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] ml-1">Infrastructure Operational Protocols (Terms)</label>
                         <textarea 
                             rows={10} 
-                            className="w-full p-8 bg-slate-50 border border-slate-200 rounded-[25px] text-sm leading-relaxed font-normal outline-none focus:bg-white focus:ring-1 focus:ring-slate-300 transition-all resize-none break-words whitespace-pre-wrap shadow-inner" 
+                            className="w-full p-8 bg-white border border-slate-200 rounded-[25px] text-sm leading-relaxed font-normal outline-none focus:bg-white focus:ring-1 focus:ring-slate-300 transition-all resize-none break-words whitespace-pre-wrap shadow-inner" 
                             value={localManifest.auth.termsContent} 
                             onChange={e => updateStudioField('auth', 'termsContent', e.target.value)} 
                         />
@@ -515,7 +514,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ user, onUpdate, manif
                         <label className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] ml-1">Data Privacy & Encryption Guideline (Privacy)</label>
                         <textarea 
                             rows={10} 
-                            className="w-full p-8 bg-slate-50 border border-slate-200 rounded-[25px] text-sm leading-relaxed font-normal outline-none focus:bg-white focus:ring-1 focus:ring-slate-300 transition-all resize-none break-words whitespace-pre-wrap shadow-inner" 
+                            className="w-full p-8 bg-white border border-slate-200 rounded-[25px] text-sm leading-relaxed font-normal outline-none focus:bg-white focus:ring-1 focus:ring-slate-300 transition-all resize-none break-words whitespace-pre-wrap shadow-inner" 
                             value={localManifest.auth.privacyContent} 
                             onChange={e => updateStudioField('auth', 'privacyContent', e.target.value)} 
                         />
@@ -536,7 +535,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ user, onUpdate, manif
                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">{key} Identifier (Wraps)</label>
                        <textarea 
                             rows={1}
-                            className="w-full px-6 py-4 bg-slate-50 border border-slate-200 rounded-[15px] text-sm font-bold outline-none resize-none break-words break-all whitespace-pre-wrap focus:bg-white focus:ring-1 focus:ring-slate-300 min-h-[56px]" 
+                            className="w-full px-6 py-4 bg-white border border-slate-200 rounded-[15px] text-sm font-bold outline-none resize-none break-words break-all whitespace-pre-wrap focus:bg-white focus:ring-1 focus:ring-slate-300 min-h-[56px]" 
                             value={(localManifest.navigation as any)[key]} 
                             onChange={e => updateStudioField('navigation', key, e.target.value)} 
                        />

@@ -1,4 +1,3 @@
-
 import React, { useMemo, useState } from 'react';
 import type { User, SystemManifest, ViewType, CrudPermissions } from '../types';
 import { UserRole, AccountStatus } from '../types';
@@ -205,7 +204,7 @@ const AdminManagement: React.FC<AdminManagementProps> = ({
                   <textarea
                     required
                     rows={1}
-                    className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-[12px] outline-none resize-none break-words whitespace-pre-wrap font-normal"
+                    className="w-full px-5 py-4 bg-white border border-slate-200 rounded-[12px] outline-none resize-none break-words whitespace-pre-wrap font-normal"
                     value={newStaff.name}
                     onChange={(e) =>
                       setNewStaff((prev) => ({ ...prev, name: e.target.value }))
@@ -220,7 +219,7 @@ const AdminManagement: React.FC<AdminManagementProps> = ({
                   <input
                     required
                     type="email"
-                    className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-[12px] outline-none break-all"
+                    className="w-full px-5 py-4 bg-white border border-slate-200 rounded-[12px] outline-none break-all"
                     value={newStaff.email}
                     onChange={(e) =>
                       setNewStaff((prev) => ({ ...prev, email: e.target.value }))
@@ -233,7 +232,7 @@ const AdminManagement: React.FC<AdminManagementProps> = ({
                     Initial Access Tier
                   </label>
                   <select
-                    className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-[12px] outline-none appearance-none cursor-pointer"
+                    className="w-full px-5 py-4 bg-white border border-slate-200 rounded-[12px] outline-none appearance-none cursor-pointer"
                     value={newStaff.role}
                     onChange={(e) =>
                       setNewStaff((prev) => ({

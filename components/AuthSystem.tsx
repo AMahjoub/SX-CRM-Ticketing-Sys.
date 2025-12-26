@@ -1,4 +1,3 @@
-
 import React, { useState, useMemo } from 'react';
 import { User, UserRole, SystemManifest, AccountStatus } from '../types';
 
@@ -176,7 +175,7 @@ const AuthSystem: React.FC<AuthSystemProps> = ({ onLogin, onRegister, staffMembe
                   <textarea 
                     required 
                     rows={1}
-                    className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-[12px] outline-none text-sm transition-all focus:bg-white focus:ring-1 focus:ring-slate-300 resize-none break-words whitespace-pre-wrap" 
+                    className="w-full px-5 py-4 bg-white border border-slate-200 rounded-[12px] outline-none text-sm transition-all focus:bg-white focus:ring-1 focus:ring-slate-300 resize-none break-words whitespace-pre-wrap" 
                     placeholder="e.g. John Smith" 
                     value={name} 
                     onChange={e => setName(e.target.value)} 
@@ -187,7 +186,7 @@ const AuthSystem: React.FC<AuthSystemProps> = ({ onLogin, onRegister, staffMembe
                   <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Entity Company</label>
                   <select 
                     required 
-                    className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-[12px] outline-none text-sm appearance-none cursor-pointer"
+                    className="w-full px-5 py-4 bg-white border border-slate-200 rounded-[12px] outline-none text-sm appearance-none cursor-pointer"
                     value={selectedCompany}
                     onChange={e => handleCompanyChange(e.target.value)}
                   >
@@ -203,7 +202,7 @@ const AuthSystem: React.FC<AuthSystemProps> = ({ onLogin, onRegister, staffMembe
                     <textarea 
                       required 
                       rows={1}
-                      className="w-full px-5 py-4 bg-emerald-50/30 border border-emerald-200 rounded-[12px] outline-none text-sm font-medium resize-none break-words whitespace-pre-wrap" 
+                      className="w-full px-5 py-4 bg-white border border-emerald-200 rounded-[12px] outline-none text-sm font-medium resize-none break-words whitespace-pre-wrap" 
                       placeholder="Global Corp Ltd" 
                       value={customCompany} 
                       onChange={e => setCustomCompany(e.target.value)} 
@@ -216,11 +215,11 @@ const AuthSystem: React.FC<AuthSystemProps> = ({ onLogin, onRegister, staffMembe
             <div className="space-y-5">
               <div className="space-y-1.5">
                 <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Account Email</label>
-                <input required type="email" className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-[12px] outline-none text-sm focus:bg-white transition-all break-all" placeholder="user@domain.com" value={email} onChange={e => setEmail(e.target.value)} />
+                <input required type="email" className="w-full px-5 py-4 bg-white border border-slate-200 rounded-[12px] outline-none text-sm focus:bg-white transition-all break-all" placeholder="user@domain.com" value={email} onChange={e => setEmail(e.target.value)} />
               </div>
               <div className="space-y-1.5">
                 <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Access Passphrase</label>
-                <input required type="password" className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-[12px] outline-none text-sm focus:bg-white transition-all" placeholder="••••••••" value={password} onChange={e => setPassword(e.target.value)} />
+                <input required type="password" className="w-full px-5 py-4 bg-white border border-slate-200 rounded-[12px] outline-none text-sm focus:bg-white transition-all" placeholder="••••••••" value={password} onChange={e => setPassword(e.target.value)} />
               </div>
             </div>
 
